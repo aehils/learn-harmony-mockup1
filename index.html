@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Course Admin Desk — CA Grade Rescue</title>
+<style>
+  :root{
+    --bg:#f4f6fb;
+    --surface:#ffffff;
+    --ink:#1b2330;
+    --ink-soft:#5b6577;
+    --line:#e6eaf2;
+    --primary:#1f4e79;     /* deep professional blue */
+    --primary-soft:#e8f0fa;
+    --teal:#0f8a7e;
+    --teal-soft:#e2f4f1;
+    --amber:#c47b04;
+    --amber-soft:#fdf3df;
+    --red:#c0392b;
+    --red-soft:#fbe9e7;
+    --green:#1f8a4c;
+    --green-soft:#e6f5ec;
+    --shadow:0 1px 2px rgba(20,32,54,.06), 0 8px 24px rgba(20,32,54,.06);
+    --radius:14px;
+    --radius-sm:9px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    line-height:1.45;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:0 22px 80px}
+
+  /* ---------- Top bar ---------- */
+  .topbar{
+    background:linear-gradient(180deg,#ffffff,#fbfcfe);
+    border-bottom:1px solid var(--line);
+    position:sticky;top:0;z-index:40;
+  }
+  .topbar .inner{
+    max-width:1180px;margin:0 auto;padding:14px 22px;
+    display:flex;align-items:center;gap:16px;
+  }
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{
+    width:40px;height:40px;border-radius:11px;flex:0 0 auto;
+    background:linear-gradient(135deg,var(--primary),#2d6aa8);
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-weight:700;font-size:18px;letter-spacing:.5px;
+    box-shadow:0 4px 12px rgba(31,78,121,.28);
+  }
+  .brand h1{font-size:16px;margin:0;font-weight:700;letter-spacing:-.2px}
+  .brand p{margin:0;font-size:12px;color:var(--ink-soft)}
+  .topbar .spacer{flex:1}
+  .user-chip{
+    display:flex;align-items:center;gap:10px;padding:6px 12px 6px 6px;
+    border:1px solid var(--line);border-radius:999px;background:#fff;
+  }
+  .avatar{
+    width:30px;height:30px;border-radius:50%;flex:0 0 auto;
+    background:var(--teal-soft);color:var(--teal);font-weight:700;font-size:13px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .user-chip .who{font-size:12px;line-height:1.2}
+  .user-chip .who b{display:block;font-size:13px}
+  .user-chip .who span{color:var(--ink-soft)}
+
+  /* ---------- Course banner ---------- */
+  .course-banner{
+    margin-top:22px;background:var(--surface);border:1px solid var(--line);
+    border-radius:var(--radius);box-shadow:var(--shadow);
+    padding:20px 24px;display:flex;flex-wrap:wrap;align-items:center;gap:22px;
+  }
+  .course-banner .course-id{
+    font-size:13px;font-weight:700;color:var(--primary);
+    background:var(--primary-soft);padding:5px 12px;border-radius:8px;
+  }
+  .course-banner h2{margin:0;font-size:20px;letter-spacing:-.3px}
+  .course-banner .meta{display:flex;gap:26px;margin-left:auto;flex-wrap:wrap}
+  .course-banner .meta div{font-size:12px;color:var(--ink-soft)}
+  .course-banner .meta div b{display:block;font-size:17px;color:var(--ink);font-weight:700}
+
+  /* ---------- Stepper ---------- */
+  .stepper{display:flex;gap:14px;margin:26px 0 8px;flex-wrap:wrap}
+  .step-pill{
+    flex:1 1 240px;display:flex;align-items:center;gap:13px;
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:14px 16px;transition:.25s;position:relative;overflow:hidden;
+  }
+  .step-pill.active{border-color:var(--primary);box-shadow:0 6px 20px rgba(31,78,121,.12)}
+  .step-pill.done{border-color:var(--green)}
+  .step-pill .num{
+    width:32px;height:32px;border-radius:9px;flex:0 0 auto;
+    background:var(--bg);color:var(--ink-soft);font-weight:700;
+    display:flex;align-items:center;justify-content:center;font-size:14px;transition:.25s;
+  }
+  .step-pill.active .num{background:var(--primary);color:#fff}
+  .step-pill.done .num{background:var(--green);color:#fff}
+  .step-pill .t b{display:block;font-size:13.5px}
+  .step-pill .t span{font-size:11.5px;color:var(--ink-soft)}
+
+  /* ---------- Section cards ---------- */
+  section.card{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);margin-top:18px;overflow:hidden;
+  }
+  .card-head{
+    padding:18px 22px;border-bottom:1px solid var(--line);
+    display:flex;align-items:center;gap:14px;
+  }
+  .card-head .badge{
+    width:30px;height:30px;border-radius:8px;flex:0 0 auto;
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;
+    background:var(--primary-soft);color:var(--primary);
+  }
+  .card-head h3{margin:0;font-size:16px;letter-spacing:-.2px}
+  .card-head p{margin:1px 0 0;font-size:12.5px;color:var(--ink-soft)}
+  .card-body{padding:22px}
+
+  /* ---------- Drop zone ---------- */
+  .dropzone{
+    border:2px dashed #c4d0e2;border-radius:var(--radius);
+    background:linear-gradient(180deg,#fbfdff,#f5f9ff);
+    padding:34px 24px;text-align:center;transition:.2s;cursor:pointer;
+  }
+  .dropzone:hover,.dropzone.drag{border-color:var(--primary);background:#eef5ff}
+  .dropzone .ico{
+    width:54px;height:54px;border-radius:14px;margin:0 auto 12px;
+    background:#fff;border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;font-size:26px;
+    box-shadow:var(--shadow);
+  }
+  .dropzone h4{margin:0 0 4px;font-size:15px}
+  .dropzone p{margin:0;font-size:12.5px;color:var(--ink-soft)}
+
+  .btn{
+    appearance:none;border:1px solid transparent;border-radius:10px;
+    padding:11px 18px;font-size:13.5px;font-weight:600;cursor:pointer;
+    display:inline-flex;align-items:center;gap:8px;transition:.18s;font-family:inherit;
+  }
+  .btn:active{transform:translateY(1px)}
+  .btn-primary{background:var(--primary);color:#fff}
+  .btn-primary:hover{background:#1a4368}
+  .btn-teal{background:var(--teal);color:#fff}
+  .btn-teal:hover{background:#0c766c}
+  .btn-ghost{background:#fff;border-color:var(--line);color:var(--ink)}
+  .btn-ghost:hover{border-color:#c4d0e2;background:#fbfdff}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .btn-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px;align-items:center}
+
+  .hint{font-size:12px;color:var(--ink-soft)}
+
+  /* ---------- Raw preview / table shared ---------- */
+  .table-scroll{overflow:auto;border:1px solid var(--line);border-radius:var(--radius-sm);max-height:520px}
+  table{border-collapse:collapse;width:100%;font-size:13px}
+  thead th{
+    position:sticky;top:0;background:#f7f9fc;text-align:left;
+    padding:11px 14px;font-size:11.5px;letter-spacing:.4px;text-transform:uppercase;
+    color:var(--ink-soft);border-bottom:1px solid var(--line);white-space:nowrap;z-index:2;
+  }
+  th.sortable{cursor:pointer;user-select:none}
+  th.sortable:hover{color:var(--primary)}
+  th.sortable .arrow{opacity:.4;font-size:10px;margin-left:4px}
+  th.sortable.asc .arrow,th.sortable.desc .arrow{opacity:1;color:var(--primary)}
+  tbody td{padding:10px 14px;border-bottom:1px solid #f0f2f7;white-space:nowrap}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr:hover{background:#fafcff}
+  .mono{font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:12.5px}
+
+  /* messy raw cells */
+  .raw-dup{background:var(--red-soft);color:var(--red);font-weight:600;border-radius:4px;padding:1px 5px}
+  .raw-low{background:var(--amber-soft);color:var(--amber);border-radius:4px;padding:1px 5px}
+  .raw-out{background:var(--red-soft);color:var(--red);font-weight:700;border-radius:4px;padding:1px 5px}
+  .raw-absent{color:var(--ink-soft);font-style:italic}
+
+  /* ---------- Issue summary cards ---------- */
+  .issue-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+  .issue-card{
+    border:1px solid var(--line);border-radius:var(--radius-sm);padding:16px;background:#fff;
+    position:relative;overflow:hidden;
+  }
+  .issue-card .n{font-size:30px;font-weight:800;letter-spacing:-1px;line-height:1}
+  .issue-card .l{font-size:12.5px;color:var(--ink-soft);margin-top:6px}
+  .issue-card .tag{
+    position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:8px;
+    display:flex;align-items:center;justify-content:center;font-size:15px;
+  }
+  .issue-card.red .n{color:var(--red)} .issue-card.red .tag{background:var(--red-soft)}
+  .issue-card.amber .n{color:var(--amber)} .issue-card.amber .tag{background:var(--amber-soft)}
+  .issue-card.teal .n{color:var(--teal)} .issue-card.teal .tag{background:var(--teal-soft)}
+  .issue-card.green .n{color:var(--green)} .issue-card.green .tag{background:var(--green-soft)}
+
+  /* ---------- Progress ---------- */
+  .proc{margin-top:20px;display:none}
+  .proc.show{display:block}
+  .progress-track{height:8px;border-radius:99px;background:var(--bg);overflow:hidden}
+  .progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--primary));transition:width .25s}
+  .proc-log{margin-top:14px;display:flex;flex-direction:column;gap:8px}
+  .proc-line{display:flex;align-items:center;gap:10px;font-size:13px;opacity:0;transform:translateY(4px);transition:.3s}
+  .proc-line.in{opacity:1;transform:none}
+  .proc-line .dot{width:18px;height:18px;border-radius:50%;flex:0 0 auto;background:var(--green-soft);color:var(--green);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+
+  /* ---------- Status chips ---------- */
+  .chip{
+    display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;
+    padding:3px 9px;border-radius:999px;white-space:nowrap;
+  }
+  .chip::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+  .chip.resolved{background:var(--green-soft);color:var(--green)}
+  .chip.clean{background:var(--primary-soft);color:var(--primary)}
+  .chip.missing{background:var(--amber-soft);color:var(--amber)}
+  .chip.flag{background:var(--red-soft);color:var(--red)}
+
+  /* ---------- Filter bar ---------- */
+  .filterbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+  .search{
+    flex:1 1 240px;min-width:200px;position:relative;
+  }
+  .search input{
+    width:100%;padding:10px 12px 10px 36px;border:1px solid var(--line);border-radius:10px;
+    font-size:13.5px;font-family:inherit;background:#fff;
+  }
+  .search input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft)}
+  .search .si{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--ink-soft)}
+  .fchips{display:flex;gap:8px;flex-wrap:wrap}
+  .fchip{
+    border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 13px;
+    font-size:12.5px;font-weight:600;color:var(--ink-soft);cursor:pointer;transition:.15s;
+    display:inline-flex;align-items:center;gap:6px;
+  }
+  .fchip:hover{border-color:#c4d0e2}
+  .fchip.on{background:var(--primary);border-color:var(--primary);color:#fff}
+  .fchip .cnt{
+    font-size:11px;background:rgba(0,0,0,.06);border-radius:99px;padding:0 6px;
+  }
+  .fchip.on .cnt{background:rgba(255,255,255,.25)}
+
+  .score-bad{color:var(--red);font-weight:700}
+  .score-mid{color:var(--amber);font-weight:600}
+  .name-fix{color:var(--teal);font-size:11px;margin-left:6px}
+
+  .empty{padding:40px;text-align:center;color:var(--ink-soft);font-size:13.5px}
+
+  .locked{opacity:.5;pointer-events:none;filter:grayscale(.3)}
+  .lock-note{
+    display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-soft);
+    background:var(--bg);border-radius:8px;padding:10px 14px;margin-top:2px;
+  }
+
+  /* ---------- Modal ---------- */
+  .overlay{
+    position:fixed;inset:0;background:rgba(18,26,40,.55);backdrop-filter:blur(2px);
+    display:none;align-items:center;justify-content:center;z-index:100;padding:20px;
+  }
+  .overlay.show{display:flex}
+  .modal{
+    background:#fff;border-radius:18px;max-width:520px;width:100%;overflow:hidden;
+    box-shadow:0 30px 80px rgba(10,20,40,.4);animation:pop .25s ease;
+  }
+  @keyframes pop{from{transform:translateY(12px) scale(.98);opacity:0}to{transform:none;opacity:1}}
+  .modal-head{padding:20px 24px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px}
+  .modal-head .mi{width:38px;height:38px;border-radius:10px;background:var(--teal-soft);color:var(--teal);display:flex;align-items:center;justify-content:center;font-size:18px}
+  .modal-head h3{margin:0;font-size:16px}
+  .modal-head p{margin:1px 0 0;font-size:12px;color:var(--ink-soft)}
+  .modal-body{padding:24px}
+  .link-box{
+    display:flex;gap:8px;background:var(--bg);border:1px solid var(--line);border-radius:10px;
+    padding:6px 6px 6px 14px;align-items:center;
+  }
+  .link-box .url{flex:1;font-size:12.5px;color:var(--primary);font-family:ui-monospace,monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .modal .close{margin-left:auto;cursor:pointer;color:var(--ink-soft);background:none;border:none;font-size:20px;line-height:1}
+
+  /* simulated public dashboard */
+  .pubdash{border:1px solid var(--line);border-radius:12px;margin-top:18px;overflow:hidden}
+  .pubdash .ph{background:var(--primary);color:#fff;padding:13px 16px;font-size:13px;display:flex;align-items:center;gap:8px}
+  .pubdash .pb{padding:18px 16px}
+  .pubdash .lookup{display:flex;gap:8px}
+  .pubdash .lookup input{flex:1;padding:10px 12px;border:1px solid var(--line);border-radius:9px;font-size:13px;font-family:ui-monospace,monospace}
+  .pubdash .lookup input:focus{outline:none;border-color:var(--primary)}
+  .result{margin-top:14px;border-radius:10px;padding:14px;display:none}
+  .result.ok{display:block;background:var(--green-soft)}
+  .result.no{display:block;background:var(--red-soft);color:var(--red);font-size:13px}
+  .result .rname{font-size:15px;font-weight:700}
+  .result .rmatric{font-size:12px;color:var(--ink-soft);font-family:ui-monospace,monospace}
+  .result .rscore{font-size:30px;font-weight:800;color:var(--primary);margin-top:6px}
+  .result .rscore small{font-size:14px;color:var(--ink-soft);font-weight:600}
+
+  .toast{
+    position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
+    background:var(--ink);color:#fff;padding:12px 20px;border-radius:12px;font-size:13.5px;
+    box-shadow:0 12px 40px rgba(0,0,0,.3);opacity:0;transition:.3s;z-index:200;
+    display:flex;align-items:center;gap:10px;
+  }
+  .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+  .footnote{text-align:center;font-size:11.5px;color:var(--ink-soft);margin-top:28px}
+  @media (max-width:680px){
+    .course-banner .meta{margin-left:0}
+  }
+</style>
+</head>
+<body>
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <div class="inner">
+      <div class="brand">
+        <div class="logo">CA</div>
+        <div>
+          <h1>Course Admin Desk</h1>
+          <p>Software-plus-service assistant for faculty</p>
+        </div>
+      </div>
+      <div class="spacer"></div>
+      <div class="user-chip">
+        <div class="avatar">CO</div>
+        <div class="who"><b>Dr. Chioma Okafor</b><span>Senior Lecturer · Computer Science</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+
+    <!-- Course banner -->
+    <div class="course-banner">
+      <span class="course-id">CSC 401</span>
+      <div>
+        <h2>Software Engineering</h2>
+        <p class="hint" style="margin:2px 0 0">Continuous Assessment · CA1 (marked out of 20) · 2024/2025 Session</p>
+      </div>
+      <div class="meta">
+        <div><b id="m-enrolled">512</b>Enrolled</div>
+        <div><b id="m-records">0</b>Records uploaded</div>
+        <div><b id="m-issues">—</b>Issues found</div>
+        <div><b id="m-ready">—</b>Audit ready</div>
+      </div>
+    </div>
+
+    <!-- Stepper -->
+    <div class="stepper">
+      <div class="step-pill active" id="sp1">
+        <div class="num">1</div>
+        <div class="t"><b>Raw Input</b><span>Collect the messy sheet</span></div>
+      </div>
+      <div class="step-pill" id="sp2">
+        <div class="num">2</div>
+        <div class="t"><b>AI Clean &amp; Validate</b><span>Repair &amp; cross-check</span></div>
+      </div>
+      <div class="step-pill" id="sp3">
+        <div class="num">3</div>
+        <div class="t"><b>Pristine Output</b><span>Official, shareable grades</span></div>
+      </div>
+    </div>
+
+    <!-- ===== STEP 1 : RAW INPUT ===== -->
+    <section class="card" id="card1">
+      <div class="card-head">
+        <div class="badge">1</div>
+        <div>
+          <h3>The Raw Input Desk</h3>
+          <p>Drop the rough grade sheet your Class Rep sent — duplicates, typos and all. We&rsquo;ll sort it out.</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="dropzone" id="dropzone">
+          <div class="ico">📄</div>
+          <h4>Drag &amp; drop a CSV / scanned sheet here</h4>
+          <p>or click to browse — accepts the rough records exactly as they arrive</p>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" id="btnSimulate">
+            <span>⚡</span> Simulate Class Rep Upload
+          </button>
+          <span class="hint" id="uploadHint">No file yet · try the simulated upload to load a real-world messy sheet.</span>
+        </div>
+
+        <!-- raw preview appears here -->
+        <div id="rawPreview" style="display:none;margin-top:22px">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+            <span class="chip flag">Unverified raw data</span>
+            <span class="hint" id="rawCount"></span>
+          </div>
+          <div class="table-scroll">
+            <table id="rawTable">
+              <thead>
+                <tr>
+                  <th>#</th><th>Matric No (as typed)</th><th>Student Name (as typed)</th><th>CA Score</th><th>Note</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== STEP 2 : PROCESSING ===== -->
+    <section class="card" id="card2">
+      <div class="card-head">
+        <div class="badge">2</div>
+        <div>
+          <h3>Automated Processing Engine</h3>
+          <p>One click cross-checks every row against the official class roster and exam rules.</p>
+        </div>
+      </div>
+      <div class="card-body" id="card2body">
+        <div class="lock-note" id="lock2">
+          <span>🔒</span> Load the raw sheet in Step 1 first, then run the cleaner here.
+        </div>
+        <div id="proc2" class="locked">
+          <div class="btn-row" style="margin-top:0">
+            <button class="btn btn-teal" id="btnClean"><span>🧪</span> Run AI Clean &amp; Validate</button>
+            <span class="hint">Detects duplicate matric numbers, roster mismatches and impossible scores.</span>
+          </div>
+
+          <div class="proc show" id="procPanel" style="display:none">
+            <div class="progress-track"><div class="progress-fill" id="progFill"></div></div>
+            <div class="proc-log" id="procLog"></div>
+          </div>
+
+          <div id="issueSummary" style="display:none;margin-top:22px">
+            <div class="issue-grid">
+              <div class="issue-card red"><div class="tag">🔁</div><div class="n" id="iDup">0</div><div class="l">Duplicate matric numbers</div></div>
+              <div class="issue-card amber"><div class="tag">👤</div><div class="n" id="iName">0</div><div class="l">Roster name mismatches</div></div>
+              <div class="issue-card red"><div class="tag">📈</div><div class="n" id="iOut">0</div><div class="l">Impossible / outlier scores</div></div>
+              <div class="issue-card amber"><div class="tag">⚠️</div><div class="n" id="iMiss">0</div><div class="l">Missing / absent records</div></div>
+              <div class="issue-card green"><div class="tag">✓</div><div class="n" id="iClean">0</div><div class="l">Clean on first pass</div></div>
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-primary" id="btnToOutput"><span>↓</span> Open the Pristine Output Desk</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== STEP 3 : OUTPUT ===== -->
+    <section class="card" id="card3">
+      <div class="card-head">
+        <div class="badge">3</div>
+        <div>
+          <h3>The Pristine Output Desk</h3>
+          <p>Finalised, official CA grades — searchable, sortable and ready to publish.</p>
+        </div>
+      </div>
+      <div class="card-body" id="card3body">
+        <div class="lock-note" id="lock3">
+          <span>🔒</span> Run the cleaner in Step 2 to reveal the finalised grade table.
+        </div>
+
+        <div id="output3" class="locked">
+          <!-- controls -->
+          <div class="filterbar">
+            <div class="search">
+              <span class="si">🔍</span>
+              <input id="searchInput" placeholder="Search by name or matric number…" />
+            </div>
+            <div class="fchips" id="fchips">
+              <button class="fchip on" data-f="all">All <span class="cnt" id="c-all">0</span></button>
+              <button class="fchip" data-f="resolved">Resolved <span class="cnt" id="c-resolved">0</span></button>
+              <button class="fchip" data-f="missing">Missing flares <span class="cnt" id="c-missing">0</span></button>
+              <button class="fchip" data-f="flag">Needs review <span class="cnt" id="c-flag">0</span></button>
+            </div>
+          </div>
+
+          <div class="table-scroll">
+            <table id="cleanTable">
+              <thead>
+                <tr>
+                  <th class="sortable" data-k="matric">Matric No <span class="arrow">↕</span></th>
+                  <th class="sortable" data-k="name">Student Name <span class="arrow">↕</span></th>
+                  <th class="sortable" data-k="score">CA Score <span class="arrow">↕</span></th>
+                  <th class="sortable" data-k="grade">Grade <span class="arrow">↕</span></th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="empty" id="emptyRow" style="display:none">No records match this filter.</div>
+
+          <div class="btn-row">
+            <button class="btn btn-teal" id="btnVerify"><span>🔗</span> Generate Student Verification Link</button>
+            <button class="btn btn-ghost" id="btnExport"><span>⬇</span> Export Official CA Sheet (PDF)</button>
+            <span class="hint" id="outHint"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <p class="footnote">Course Admin Desk · Interactive prototype · Sample data only — no real student records shown.</p>
+  </div>
+
+  <!-- ===== Verification modal ===== -->
+  <div class="overlay" id="overlay">
+    <div class="modal">
+      <div class="modal-head">
+        <div class="mi">🔗</div>
+        <div>
+          <h3>Student Verification Link</h3>
+          <p>Public, read-only — stops the WhatsApp &ldquo;what&rsquo;s my score?&rdquo; spam.</p>
+        </div>
+        <button class="close" id="closeModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="hint" style="margin:0 0 10px">Share this secure link with the class. Students see <b>only their own</b> CA score by entering their matric number — no names or other scores are exposed.</p>
+        <div class="link-box">
+          <span class="url" id="verifyUrl">https://verify.courseadmindesk.ng/csc401/ca1/8f3a92</span>
+          <button class="btn btn-primary" id="copyLink" style="padding:8px 14px">Copy</button>
+        </div>
+
+        <!-- simulated public dashboard -->
+        <div class="pubdash">
+          <div class="ph">🛡️ csc401.verify · Read-only student portal</div>
+          <div class="pb">
+            <div class="lookup">
+              <input id="pubMatric" placeholder="e.g. RUN/2022/0042" />
+              <button class="btn btn-teal" id="pubCheck" style="padding:10px 16px">Check</button>
+            </div>
+            <div class="result" id="pubResult"></div>
+            <p class="hint" style="margin:12px 0 0">Try a matric number from the table, e.g. <span class="mono">RUN/2021/0117</span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------------------------------------------------------------
+     Official class roster (the source of truth the engine validates
+     against). Matric format: RUN/<entry-year>/<serial>
+  ----------------------------------------------------------------*/
+  const ROSTER = [
+    ["RUN/2021/0117","Adaeze Nwosu"],
+    ["RUN/2021/0204","Babatunde Adeyemi"],
+    ["RUN/2022/0042","Chidinma Eze"],
+    ["RUN/2022/0058","Emeka Okonkwo"],
+    ["RUN/2022/0061","Fatima Bello"],
+    ["RUN/2022/0073","Gbenga Akinola"],
+    ["RUN/2022/0089","Halima Yusuf"],
+    ["RUN/2022/0094","Ifeoma Obi"],
+    ["RUN/2022/0102","Jude Anyanwu"],
+    ["RUN/2022/0110","Kemi Adebayo"],
+    ["RUN/2022/0125","Lawal Suleiman"],
+    ["RUN/2022/0138","Maryam Sani"],
+    ["RUN/2022/0146","Ngozi Uche"],
+    ["RUN/2022/0151","Obinna Nnaji"],
+    ["RUN/2022/0163","Precious Etim"],
+    ["RUN/2022/0177","Quadri Lawal"],
+    ["RUN/2022/0185","Rukayat Idris"],
+    ["RUN/2022/0190","Samuel Ojo"],
+    ["RUN/2022/0203","Tochukwu Mba"],
+    ["RUN/2022/0218","Uchechi Kalu"],
+    ["RUN/2022/0224","Victor Enahoro"],
+    ["RUN/2022/0231","Wasiu Salami"],
+    ["RUN/2022/0247","Yetunde Falade"],
+    ["RUN/2022/0259","Zainab Mohammed"],
+    ["RUN/2023/0012","Amaka Igwe"],
+    ["RUN/2023/0027","Bisi Ogundele"],
+    ["RUN/2023/0034","Chinedu Okeke"]
+  ];
+  const rosterMap = new Map(ROSTER.map(r=>[r[0], r[1]]));
+  const MAX_SCORE = 20;
+
+  /* ---------------------------------------------------------------
+     The MESSY raw upload (what the Class Rep actually sends).
+     Deliberately contains the classic Nigerian-records problems:
+       - lowercase / inconsistent-case names
+       - a duplicated matric number
+       - a name that mismatches the official roster
+       - an impossible score (25 out of 20)
+       - "absent" / blank scores
+       - whitespace and format noise
+  ----------------------------------------------------------------*/
+  const RAW = [
+    {matric:"RUN/2021/0117", name:"adaeze nwosu",       score:"16"},   /* lowercase → casing tidy */
+    {matric:"RUN/2021/0204", name:"BABATUNDE ADEYEMI",  score:"14"},   /* all-caps → casing tidy */
+    {matric:"RUN/2022/0042", name:"chidinma eze",       score:"18"},
+    {matric:"RUN/2022/0042", name:"Chidinma Eze",       score:"17"},   /* DUPLICATE matric (entered twice) */
+    {matric:"RUN/2022/0058", name:"Emeka  Okonkwo",     score:"12"},   /* double space */
+    {matric:"RUN/2022/0061", name:"fatima bello",       score:"absent"},/* missing score */
+    {matric:"RUN/2022/0073", name:"Gbenga Akinola",     score:"15"},
+    {matric:"RUN/2022/0073", name:"gbenga akinola",     score:"15"},   /* DUPLICATE matric */
+    {matric:"RUN/2022/0089", name:"halima yusuf",       score:"19"},
+    {matric:"RUN/2022/0094", name:"Ifeoma Obi",         score:"25"},   /* outlier: 25 out of 20 */
+    {matric:"RUN/2022/0102", name:"jude anyanwu",       score:"11"},
+    {matric:"RUN/2022/0110", name:"Kemi Adebayo",       score:"17"},
+    {matric:"RUN/2022/0125", name:"LAWAL SULEIMAN",     score:"13"},
+    {matric:"RUN/2022/0138", name:"maryam sani",        score:""},     /* blank score */
+    {matric:"RUN/2022/0146", name:"Ngozi Uche",         score:"16"},
+    {matric:"RUN/2022/0151", name:"obinna naji",        score:"14"},   /* name mismatch vs roster: Nnaji */
+    {matric:"RUN/2022/0163", name:"Precious Etim",      score:"18"},
+    {matric:"RUN/2022/0177", name:"quadri lawai",       score:"13"},   /* name mismatch vs roster: Lawal */
+    {matric:"RUN/2022/0185", name:"rukayat idris",      score:"20"},
+    {matric:"RUN/2022/0190", name:"Samuel Ojo",         score:"-3"},   /* outlier: impossible negative */
+    {matric:"RUN/2022/0203", name:"TOCHUKWU MBA",       score:"15"},
+    {matric:"RUN/2022/0218", name:"uchechi kalu",       score:"absent"},/* missing score */
+    {matric:"RUN/2022/0224", name:"Victor Enahoro",     score:"17"},
+    /* RUN/2022/0231 Wasiu Salami deliberately NOT submitted → missing-record flare */
+    {matric:"RUN/2022/0247", name:"Yetunde Falade",     score:"19"},
+    {matric:"RUN/2022/0259", name:"zainab mohammed",    score:"16"},
+    {matric:"RUN/2023/0012", name:"amaka igwe",         score:"18"},
+    {matric:"RUN/2023/0027", name:"Bisi Ogundele",      score:"14"},
+    {matric:"RUN/2023/0034", name:"chinedu okeke",      score:"13"}
+  ];
+
+  /* ---------- helpers ---------- */
+  const $ = s=>document.querySelector(s);
+  const $$ = s=>Array.from(document.querySelectorAll(s));
+  function titleCase(s){
+    return s.trim().replace(/\s+/g," ").toLowerCase()
+      .replace(/\b\w/g,c=>c.toUpperCase());
+  }
+  function gradeFor(score){
+    if(score>=16) return "A";
+    if(score>=14) return "B";
+    if(score>=12) return "C";
+    if(score>=10) return "D";
+    if(score>=8)  return "E";
+    return "F";
+  }
+  let toastTimer;
+  function toast(msg){
+    const t=$("#toast"); t.innerHTML="<span>✓</span> "+msg; t.classList.add("show");
+    clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove("show"),2600);
+  }
+  function setStep(active, doneUpTo){
+    [1,2,3].forEach(n=>{
+      const el=$("#sp"+n);
+      el.classList.toggle("active", n===active);
+      el.classList.toggle("done", n<=doneUpTo && n!==active);
+    });
+  }
+
+  /* =====================================================
+     STEP 1 — load messy raw data into preview
+  ===================================================== */
+  let uploaded=false, cleaned=null;
+
+  function renderRaw(){
+    const seen=new Map();
+    RAW.forEach(r=>seen.set(r.matric,(seen.get(r.matric)||0)+1));
+    const tb=$("#rawTable tbody"); tb.innerHTML="";
+    RAW.forEach((r,i)=>{
+      const dup = seen.get(r.matric)>1;
+      const lower = r.name===r.name.toLowerCase() || r.name!==titleCase(r.name);
+      const sNum = Number(r.score);
+      const isAbsent = r.score===""||/absent/i.test(r.score);
+      const outlier = !isAbsent && (isNaN(sNum)||sNum>MAX_SCORE||sNum<0);
+      let note=[];
+      if(dup) note.push("duplicate matric");
+      if(outlier) note.push("score out of range");
+      if(isAbsent) note.push("no score");
+      const tr=document.createElement("tr");
+      tr.innerHTML=
+        "<td class='mono' style='color:var(--ink-soft)'>"+(i+1)+"</td>"+
+        "<td class='mono'>"+(dup?"<span class='raw-dup'>"+r.matric+"</span>":r.matric)+"</td>"+
+        "<td>"+(lower?"<span class='raw-low'>"+r.name+"</span>":r.name)+"</td>"+
+        "<td>"+(isAbsent?"<span class='raw-absent'>"+(r.score||"—")+"</span>":(outlier?"<span class='raw-out'>"+r.score+"</span>":r.score))+"</td>"+
+        "<td class='hint'>"+(note.length?note.join(", "):"—")+"</td>";
+      tb.appendChild(tr);
+    });
+    $("#rawCount").textContent = RAW.length+" rows received from Class Rep · WhatsApp export";
+    $("#rawPreview").style.display="block";
+  }
+
+  function doUpload(){
+    if(uploaded) return;
+    uploaded=true;
+    renderRaw();
+    $("#uploadHint").textContent="Loaded csc401_ca1_classrep.csv · "+RAW.length+" rows (raw & unverified).";
+    $("#m-records").textContent=RAW.length;
+    // unlock step 2
+    $("#proc2").classList.remove("locked");
+    $("#lock2").style.display="none";
+    setStep(2,1);
+    $("#card2").scrollIntoView({behavior:"smooth",block:"start"});
+    toast("Messy class-rep sheet loaded");
+  }
+
+  $("#btnSimulate").addEventListener("click", doUpload);
+  $("#dropzone").addEventListener("click", doUpload);
+  ["dragover","dragenter"].forEach(ev=>$("#dropzone").addEventListener(ev,e=>{e.preventDefault();$("#dropzone").classList.add("drag");}));
+  ["dragleave","drop"].forEach(ev=>$("#dropzone").addEventListener(ev,e=>{e.preventDefault();$("#dropzone").classList.remove("drag");}));
+  $("#dropzone").addEventListener("drop", doUpload);
+
+  /* =====================================================
+     STEP 2 — clean & validate engine
+  ===================================================== */
+  function buildClean(){
+    const counts = {dup:0,name:0,out:0,miss:0,clean:0};
+
+    // Count raw occurrences per matric so we can flag genuine duplicates
+    const occur=new Map();
+    RAW.forEach(r=>occur.set(r.matric.trim(),(occur.get(r.matric.trim())||0)+1));
+    counts.dup = Array.from(occur.values()).filter(n=>n>1).length; // # of matric numbers duplicated
+
+    // Group raw rows by matric, keeping the highest-confidence copy
+    // (prefer a valid in-range score; first one wins on a tie)
+    const scoreVal = r => {
+      const n=Number(r.score);
+      if(r.score===""||/absent/i.test(r.score)) return -2;     // absent
+      if(isNaN(n)||n>MAX_SCORE||n<0) return -1;                 // outlier
+      return 1;                                                 // good
+    };
+    const chosen=new Map();
+    RAW.forEach(r=>{
+      const k=r.matric.trim();
+      const cur=chosen.get(k);
+      if(!cur || scoreVal(r)>scoreVal(cur)) chosen.set(k,r);
+    });
+
+    // Build one finalised row per official roster student
+    const final=[];
+    rosterMap.forEach((officialName, matric)=>{
+      const raw=chosen.get(matric);
+      const issues=[];
+      let status="clean";
+
+      if(!raw){
+        // student exists on roster but Class Rep never submitted a record
+        counts.miss++;
+        final.push({matric,name:officialName,score:null,outlier:false,isAbsent:true,
+          grade:"—",status:"missing",issues:["No record submitted by Class Rep"]});
+        return;
+      }
+
+      const wasDuplicated = occur.get(matric)>1;
+      if(wasDuplicated){
+        issues.push("Duplicate matric on raw sheet — kept the verified copy");
+        status="resolved";
+      }
+
+      // ---- score validation ----
+      const isAbsent = raw.score===""||/absent/i.test(raw.score);
+      const sNum=Number(raw.score);
+      let score=null, outlier=false;
+      if(isAbsent){
+        issues.push("No score on raw sheet — flagged as missing");
+        status="missing"; counts.miss++;
+      } else if(isNaN(sNum)||sNum>MAX_SCORE||sNum<0){
+        issues.push('Score "'+raw.score+'" outside 0–'+MAX_SCORE+' → flagged for re-entry');
+        outlier=true; status="flag"; counts.out++;
+      } else {
+        score=sNum;
+      }
+
+      // ---- name validation against roster ----
+      const typed = titleCase(raw.name);
+      let name = officialName;
+      let reconciled=false; // true only for a genuine spelling correction
+      if(typed.toLowerCase().replace(/\s+/g," ")!==officialName.toLowerCase()){
+        // genuine spelling mismatch — reconcile to the official roster name
+        issues.push('Name "'+raw.name.trim()+'" reconciled to roster → '+officialName);
+        counts.name++; reconciled=true;
+        if(status!=="missing"&&status!=="flag") status="resolved";
+      } else if(raw.name!==officialName){
+        issues.push("Capitalisation / spacing tidied");
+        if(status==="clean") status="resolved";
+      }
+
+      if(status==="clean") counts.clean++;
+
+      final.push({matric,name,score,outlier,isAbsent,reconciled,
+        grade: score==null?"—":gradeFor(score), status, issues});
+    });
+
+    final.sort((a,b)=>a.matric.localeCompare(b.matric));
+    return {rows:final, counts};
+  }
+
+  const STEPS = [
+    "Parsing raw sheet & normalising columns…",
+    "Cross-checking matric numbers against official roster…",
+    "Repairing name casing & reconciling mismatches…",
+    "Flagging impossible scores and absent records…",
+    "De-duplicating and locking verified rows…"
+  ];
+
+  $("#btnClean").addEventListener("click", runClean);
+  function runClean(){
+    $("#btnClean").disabled=true;
+    $("#procPanel").style.display="block";
+    const log=$("#procLog"); log.innerHTML="";
+    $("#progFill").style.width="0";
+    let i=0;
+    function next(){
+      if(i<STEPS.length){
+        $("#progFill").style.width = Math.round(((i+1)/STEPS.length)*100)+"%";
+        const line=document.createElement("div");
+        line.className="proc-line";
+        line.innerHTML="<span class='dot'>✓</span> "+STEPS[i];
+        log.appendChild(line);
+        requestAnimationFrame(()=>line.classList.add("in"));
+        i++;
+        setTimeout(next, 520);
+      } else {
+        finishClean();
+      }
+    }
+    next();
+  }
+
+  function finishClean(){
+    cleaned = buildClean();
+    const c=cleaned.counts;
+    $("#iDup").textContent=c.dup;
+    $("#iName").textContent=c.name;
+    $("#iOut").textContent=c.out;
+    $("#iMiss").textContent=c.miss;
+    $("#iClean").textContent=c.clean;
+    $("#issueSummary").style.display="block";
+
+    const totalIssues=c.dup+c.name+c.out+c.miss;
+    $("#m-issues").textContent=totalIssues;
+    const ready=cleaned.rows.filter(r=>r.status==="clean"||r.status==="resolved").length;
+    $("#m-ready").textContent=ready+"/"+cleaned.rows.length;
+
+    // unlock step 3
+    $("#output3").classList.remove("locked");
+    $("#lock3").style.display="none";
+    renderClean();
+    setStep(2,2);
+    toast("Validation complete · "+totalIssues+" issues auto-resolved");
+  }
+
+  $("#btnToOutput").addEventListener("click",()=>{
+    setStep(3,2);
+    $("#card3").scrollIntoView({behavior:"smooth",block:"start"});
+  });
+
+  /* =====================================================
+     STEP 3 — pristine output table (search / sort / filter)
+  ===================================================== */
+  let curFilter="all", curSearch="", sortKey="matric", sortDir=1;
+
+  function statusChip(s){
+    if(s==="missing") return "<span class='chip missing'>Missing record flare</span>";
+    if(s==="flag")    return "<span class='chip flag'>Needs review</span>";
+    if(s==="resolved")return "<span class='chip resolved'>Resolved</span>";
+    return "<span class='chip clean'>Verified</span>";
+  }
+
+  function visibleRows(){
+    if(!cleaned) return [];
+    let rows=cleaned.rows.slice();
+    if(curFilter!=="all"){
+      rows=rows.filter(r=> curFilter==="resolved" ? (r.status==="resolved"||r.status==="clean") : r.status===curFilter);
+    }
+    if(curSearch){
+      const q=curSearch.toLowerCase();
+      rows=rows.filter(r=> r.matric.toLowerCase().includes(q) || r.name.toLowerCase().includes(q));
+    }
+    rows.sort((a,b)=>{
+      let av=a[sortKey], bv=b[sortKey];
+      if(sortKey==="score"){ av=a.score==null?-1:a.score; bv=b.score==null?-1:b.score; return (av-bv)*sortDir; }
+      av=(av==null?"":String(av)); bv=(bv==null?"":String(bv));
+      return av.localeCompare(bv)*sortDir;
+    });
+    return rows;
+  }
+
+  function renderClean(){
+    const tb=$("#cleanTable tbody"); tb.innerHTML="";
+    const rows=visibleRows();
+    rows.forEach(r=>{
+      const tr=document.createElement("tr");
+      let scoreCell;
+      if(r.score==null) scoreCell="<span class='hint'>—</span>";
+      else scoreCell="<b>"+r.score+"</b> <span class='hint'>/ "+MAX_SCORE+"</span>";
+      const nameExtra = r.reconciled ? "<span class='name-fix'>✓ name corrected</span>" : "";
+      tr.innerHTML=
+        "<td class='mono'>"+r.matric+"</td>"+
+        "<td>"+r.name+nameExtra+"</td>"+
+        "<td>"+scoreCell+"</td>"+
+        "<td><b>"+r.grade+"</b></td>"+
+        "<td>"+statusChip(r.status)+"</td>";
+      tr.title = r.issues.length? r.issues.join("\n") : "Clean on first pass";
+      tb.appendChild(tr);
+    });
+    $("#emptyRow").style.display = rows.length? "none":"block";
+
+    // chip counts
+    const all=cleaned.rows;
+    $("#c-all").textContent=all.length;
+    $("#c-resolved").textContent=all.filter(r=>r.status==="resolved"||r.status==="clean").length;
+    $("#c-missing").textContent=all.filter(r=>r.status==="missing").length;
+    $("#c-flag").textContent=all.filter(r=>r.status==="flag").length;
+    $("#outHint").textContent=all.length+" official records · last validated just now";
+  }
+
+  $("#searchInput").addEventListener("input",e=>{curSearch=e.target.value;renderClean();});
+  $("#fchips").addEventListener("click",e=>{
+    const b=e.target.closest(".fchip"); if(!b) return;
+    $$(".fchip").forEach(c=>c.classList.remove("on"));
+    b.classList.add("on"); curFilter=b.dataset.f; renderClean();
+  });
+  $$("#cleanTable th.sortable").forEach(th=>{
+    th.addEventListener("click",()=>{
+      const k=th.dataset.k;
+      if(sortKey===k) sortDir*=-1; else {sortKey=k;sortDir=1;}
+      $$("#cleanTable th.sortable").forEach(t=>t.classList.remove("asc","desc"));
+      th.classList.add(sortDir===1?"asc":"desc");
+      renderClean();
+    });
+  });
+
+  $("#btnExport").addEventListener("click",()=>toast("Official CA sheet exported (simulated PDF)"));
+
+  /* =====================================================
+     Verification link modal + simulated public dashboard
+  ===================================================== */
+  $("#btnVerify").addEventListener("click",()=>{
+    $("#overlay").classList.add("show");
+    $("#pubResult").className="result";
+    $("#pubMatric").value="";
+  });
+  $("#closeModal").addEventListener("click",()=>$("#overlay").classList.remove("show"));
+  $("#overlay").addEventListener("click",e=>{ if(e.target===$("#overlay")) $("#overlay").classList.remove("show"); });
+  $("#copyLink").addEventListener("click",()=>{
+    const url=$("#verifyUrl").textContent;
+    if(navigator.clipboard) navigator.clipboard.writeText(url).catch(()=>{});
+    toast("Verification link copied");
+  });
+  $("#pubCheck").addEventListener("click",lookup);
+  $("#pubMatric").addEventListener("keydown",e=>{if(e.key==="Enter")lookup();});
+  function lookup(){
+    const q=$("#pubMatric").value.trim().toUpperCase();
+    const res=$("#pubResult");
+    if(!cleaned){return;}
+    const row=cleaned.rows.find(r=>r.matric.toUpperCase()===q);
+    if(!q){ res.className="result no"; res.textContent="Enter your matric number to continue."; return; }
+    if(!row){
+      res.className="result no";
+      res.textContent="No record found for "+q+". Check your matric number or contact the Class Rep.";
+      return;
+    }
+    res.className="result ok";
+    res.innerHTML=
+      "<div class='rname'>"+row.name+"</div>"+
+      "<div class='rmatric'>"+row.matric+"</div>"+
+      "<div class='rscore'>"+(row.score==null?"—":row.score)+" <small>/ "+MAX_SCORE+" · CA1</small></div>"+
+      (row.score==null?"<div class='hint' style='margin-top:6px;color:var(--amber)'>No score on record — see lecturer.</div>"
+        :"<div class='chip resolved' style='margin-top:8px'>Grade "+row.grade+" · Verified</div>");
+  }
+
+})();
+</script>
+</body>
+</html>
